@@ -1,0 +1,39 @@
+{
+	"random": "53",
+	"random float": "75.192",
+	"bool": "true",
+	"date": "1991-11-17",
+	"regEx": "hellooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo world",
+	"enum": "online",
+	"firstname": "Evita",
+	"lastname": "Urania",
+	"city": "Zanzibar City",
+	"country": "Djibouti",
+	"countryCode": "BF",
+	"email uses current data": "Evita.Urania@gmail.com",
+	"email from expression": "Evita.Urania@yopmail.com",
+	"array": [
+		"Agathe",
+		"Kassey",
+		"Blinni",
+		"Riannon",
+		"Berta"
+	],
+	"array of objects": [
+		{
+			"index": "0",
+			"index start at 5": "5"
+		},
+		{
+			"index": "1",
+			"index start at 5": "6"
+		},
+		{
+			"index": "2",
+			"index start at 5": "7"
+		}
+	],
+	"Nannie": {
+		"age": "76"
+	}
+}
