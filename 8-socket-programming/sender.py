@@ -32,7 +32,7 @@ def send_file():
             while data:
                 s.send(data)
                 data = f.read(1024)
-        
+       
         print("File sent successfully!")
     except Exception as e:
         print(f"Error: {e}")
