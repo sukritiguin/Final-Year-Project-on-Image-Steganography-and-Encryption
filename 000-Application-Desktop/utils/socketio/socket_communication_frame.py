@@ -3,6 +3,36 @@ import socket
 import os
 from tkinter import filedialog
 from PIL import Image, ImageTk
+import threading
+
+class AnimatedGifLabel(tk.Label):
+    def __init__(self, master, file_path, size=(200, 200), **kwargs):
+        super().__init__(master, **kwargs)
+        self.file_path = file_path
+        self.frames = []
+        self.size = size
+
+        self.load_frames()
+
+    def load_frames(self):
+        gif = Image.open(self.file_path)
+        try:
+            while True:
+                # Resize the frame to the specified size
+                frame_resized = gif.resize(self.size)
+                self.frames.append(ImageTk.PhotoImage(frame_resized))
+                gif.seek(gif.tell() + 1)
+        except EOFError:
+            pass
+
+    def animate(self, index=0):
+        self.config(image=self.frames[index])
+        self.after(100, lambda: self.animate((index + 1) % len(self.frames)))
+
+    def config_image(self, file_path):
+        self.file_path = file_path
+        self.frames = []
+        self.load_frames()
 
 
 class SocketCommunicationPanel:
@@ -11,9 +41,25 @@ class SocketCommunicationPanel:
         self.sender_frame = None
         self.receiver_frame = None
         self.sender_image_path = ""
+        self.receiver_directory_path = ""
         self.path_label = None
         self.success_message = None
         self.error_message = None
+        self.listening = None
+
+    def select_directory(self):
+        self.receiver_directory_path = filedialog.askdirectory()
+    
+    def check_listing(self):
+        if self.listeing_checkbox_var.get() == False:
+            self.listening.config_image("./000-Application-Desktop/utils/socketio/stop.gif")
+            self.listening_checkbox.config(text="Listen")
+        else:
+            self.listening.config_image("./000-Application-Desktop/utils/socketio/giphy.gif")
+            self.listening_checkbox.config(text="Stop Listening")
+            # Start a new thread for receiving files
+            threading.Thread(target=self.receive_file).start()
+
 
     def send_file(self):
         # Get the IP address and port from the entry fields
@@ -56,6 +102,50 @@ class SocketCommunicationPanel:
             print(f"Error: {e}")
         finally:
             s.close()
+
+
+    def receive_file(self):
+        # Create a TCP/IP socket
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        # Bind the socket to the address and port
+        server_address = ('', 12345)  # Update with your desired address and port
+        server.bind(server_address)
+
+        # Listen for incoming connections
+        server.listen(1)
+
+        print("Waiting for incoming connection...")
+
+        # Accept incoming connection
+        conn, addr = server.accept()
+        print(f"Connection established with {addr}")
+
+        # Receive file info (assuming it's a string)
+        file_info = conn.recv(1024).decode()
+        print("Received file info:", file_info)
+        file_name = file_info.split("::")[0]
+
+        # Receive the file data and write it to a file
+        save_file_name = self.receiver_directory_path + "/" + file_name
+        with open(save_file_name, "wb") as f:  # Update with your desired file name and extension
+            while True:
+                chunk = conn.recv(1024)
+                if not chunk:
+                    break
+                f.write(chunk)
+        label = tk.Label(text=f"{file_name} received", master=self.receiver_frame)
+        label.pack(side="top", pady=10)
+        print("File received successfully")
+
+
+        # Close the connection
+        conn.close()
+
+        self.listening.config_image("./000-Application-Desktop/utils/socketio/stop.gif")
+        self.listening_checkbox.config(text="Listen")
+        self.listeing_checkbox_var.set(False)
+
 
 
     def open_image(self, image_label):
@@ -145,13 +235,38 @@ class SocketCommunicationPanel:
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
         right_panel_bg = "#f56942"
+        font=("Comic Sans MS", 12, "bold")
+        fg = "#fc6603"
+        light_black = "#383532"
         
-        receiver_frame = tk.Frame(self.content_frame, bg=right_panel_bg, borderwidth=1, relief="solid", width=width_, height=height_)
-        receiver_frame.pack(side="right", expand=True, fill="both")
+        self.receiver_frame = tk.Frame(self.content_frame, bg=right_panel_bg, borderwidth=1, relief="solid", width=width_, height=height_)
+        self.receiver_frame.pack(side="right", expand=True, fill="both")
 
 
-        receiver_header = tk.Label(receiver_frame, text="Receiver", font=("Arial", 18))
+        receiver_header = tk.Label(self.receiver_frame, text="Receiver", font=("Arial", 18))
         receiver_header.pack(fill="x")
+
+        # Create a label for Port Number
+        directory = tk.Button(self.receiver_frame, text="Select Directory", bg=right_panel_bg, fg="#fff", font=font, command=self.select_directory)
+        directory.pack(side="top", pady=(10, 10))
+
+        # Create a Tkinter variable to store the checkbox state
+        self.listeing_checkbox_var = tk.BooleanVar()
+
+        # Create the checkbox widget
+        self.listening_checkbox = tk.Checkbutton(self.receiver_frame, text="Listen", variable=self.listeing_checkbox_var, command=self.check_listing, bg=right_panel_bg, fg="#fff", font=font)
+
+        # Place the checkbox widget in the window
+        self.listening_checkbox.pack(side="top", pady=10)
+
+
+        gif_path = "./000-Application-Desktop/utils/socketio/stop.gif"
+        self.listening = AnimatedGifLabel(self.receiver_frame, gif_path, size=(150,150))
+        self.listening.pack(side="top", pady=(10,10))
+
+        self.listening.animate()
+
+
 
 
     def socket_communication_page(self):
