@@ -1,6 +1,67 @@
 # Step 1: Import necessary libraries
 from PIL import Image
 import random
+import string
+import os
+
+# Encryption Algorithm
+import base64
+from Crypto.Cipher import AES
+from Crypto.Protocol.KDF import PBKDF2
+import subprocess
+import re
+
+def get_wireless_ipv4():
+    # Run the ipconfig command
+    result = subprocess.run(['ipconfig'], capture_output=True, text=True)
+
+    # Extract IPv4 addresses from the output
+    matches = []
+    if result.returncode == 0:
+        output = result.stdout
+        # Use regular expression to find the IPv4 addresses
+        matches = re.findall(r"IPv4 Address[.\s]+: ([0-9]+(?:\.[0-9]+){3})", output)
+    return matches
+
+
+def encrypt_text(plaintext, private_key):
+    # Key expansion
+    key = PBKDF2(private_key.encode('utf-8'), b'salt', 32)  # 256-bit key for AES-256
+
+    # Padding
+    padding_length = AES.block_size - (len(plaintext) % AES.block_size)
+    padded_plaintext = plaintext.encode('utf-8') + bytes([padding_length]) * padding_length
+
+    # Encryption
+    cipher = AES.new(key, AES.MODE_ECB)  # Using ECB mode for simplicity, use CBC or CTR for better security
+    ciphertext = cipher.encrypt(padded_plaintext)
+
+    return ciphertext
+
+def decrypt_text(ciphertext, private_key):
+    # Key expansion
+    key = PBKDF2(private_key.encode('utf-8'), b'salt', 32)
+
+    # Decryption
+    cipher = AES.new(key, AES.MODE_ECB)
+    decrypted_padded_plaintext = cipher.decrypt(ciphertext)
+
+    # Padding removal
+    padding_length = decrypted_padded_plaintext[-1]
+    plaintext = decrypted_padded_plaintext[:-padding_length]
+
+    return plaintext.decode('utf-8')
+
+# ======================
+
+def extract_filename_and_extension(image_path):
+    filename_with_extension = os.path.basename(image_path)
+    filename, extension = os.path.splitext(filename_with_extension)
+    return filename, extension
+
+def generate_random_string(size=6):
+    characters = string.ascii_letters + string.digits
+    return ''.join(random.choice(characters) for _ in range(size))
 
 # Step 2: Define the LSBSteganography class
 class LSBSteganography:
@@ -22,7 +83,11 @@ class LSBSteganography:
     def put_int_in_pixels(self, pixels, current_char_ascii):
         # Step 4: Put integer value in pixels
         x, y = pixels
-        r, g, b, alpha = self.image.getpixel((x, y))
+        print(self.image.getpixel((x, y)))
+        try:
+            r, g, b, alpha = self.image.getpixel((x, y))
+        except:
+            r, g, b = self.image.getpixel((x, y))
         red = format(r, '08b')
         green = format(g, '08b')
         blue = format(b, '08b')
@@ -55,7 +120,12 @@ class LSBSteganography:
         else:
             return None
 
-    def hide_text(self, text_to_hide):
+    def hide_text(self, text_to_hide, private_key="sukriti-default"):
+        # Encrypt Text
+        encrypted_text = encrypt_text(text_to_hide, private_key)
+        text_to_hide = encrypted_text
+
+
         # Step 7: Hide text in the image using LSB
         seed_value = self.generate_seed()
         shuffled_array = self.create_shuffled_array(seed_value)
@@ -77,14 +147,17 @@ class LSBSteganography:
         self.image.save(output_path)
         print(f"Stego image saved at: {output_path}")
 
-    def extract_text(self):
+    def extract_text(self, private_key="sukriti-default"):
         # Step 9: Extract hidden text from the stego image
         seed_value = self.generate_seed()
         shuffled_array = self.create_shuffled_array(seed_value)
         extracted_text = ""
         for shuffled_element in shuffled_array:
             row, col = self.predict_row_col(shuffled_element)
-            r, g, b, alpha = self.image.getpixel((col, row))
+            try:
+                r, g, b, alpha = self.image.getpixel((col, row))
+            except:
+                r, g, b = self.image.getpixel((col, row))
             red = format(r, '08b')
             green = format(g, '08b')
             blue = format(b, '08b')
@@ -96,13 +169,7 @@ class LSBSteganography:
             extracted_text += data
             if data == 8:
                 break
-        return extracted_text
 
-# Step 10: Example Usage
-lsb_steganography = LSBSteganography(r"D:\Image Steganography and Encryption\8-socket-programming\receiver_picture\wM2Msf-profile-picture-3.PNG")
-# text_to_hide = "SUKRITI GUIN. This is a test image for image testing and steganography."
-# lsb_steganography.hide_text(text_to_hide)
-# output_path = "stego-image.png"
-# lsb_steganography.save_stego_image(output_path)
-extracted_text = lsb_steganography.extract_text()
-print("Extracted Text:", extracted_text)
+        decrypted_text = decrypt_text(extracted_text, private_key)
+        extracted_text = decrypted_text
+        return extracted_text
