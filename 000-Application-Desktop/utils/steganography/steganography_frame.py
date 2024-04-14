@@ -29,10 +29,11 @@ class SteganographyPannel:
         lsb_stego = LSBSteganography(image_path=self.steganography_image_path)
 
         ip_address = get_wireless_ipv4()
+        print(ip_address)
         if len(ip_address)==2:
             private_key = ip_address[1]
 
-        message = lsb_stego.extract_text(private_key=private_key)
+        message = lsb_stego.extract_text(private_key=str(private_key))
 
         # Clear existing text
         self.secreat_text_entry.delete("1.0", tk.END)
@@ -109,7 +110,7 @@ class SteganographyPannel:
 
         text_label = tk.Label(text_frame, text="Enter Message:", bg=left_panel_bg, fg=fg, font=font)
         text_label.pack(side="top", padx=(10, 5))
-        self.text_entry = tk.Text(text_frame, width=50, height=10, bg=left_panel_bg, fg=light_black, font=font)
+        self.text_entry = tk.Text(text_frame, width=50, height=5, bg=left_panel_bg, fg=light_black, font=font)
         self.text_entry.pack(side="left", padx=(5, 10))
 
 

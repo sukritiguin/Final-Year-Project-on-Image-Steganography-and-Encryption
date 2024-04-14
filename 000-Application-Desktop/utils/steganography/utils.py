@@ -123,7 +123,8 @@ class LSBSteganography:
     def hide_text(self, text_to_hide, private_key="sukriti-default"):
         # Encrypt Text
         encrypted_text = encrypt_text(text_to_hide, private_key)
-        text_to_hide = encrypted_text
+        encrypted_text_base64 = base64.b64encode(encrypted_text).decode('utf-8')
+        text_to_hide = str(encrypted_text_base64)
 
 
         # Step 7: Hide text in the image using LSB
@@ -169,7 +170,11 @@ class LSBSteganography:
             extracted_text += data
             if data == 8:
                 break
-
-        decrypted_text = decrypt_text(extracted_text, private_key)
+        
+        private_key = str(private_key)
+        print("Private key: " + private_key)
+        print("Extracted text: " + extracted_text)
+        encrypted_text_base64 = base64.b64decode(extracted_text)
+        decrypted_text = decrypt_text(encrypted_text_base64, private_key)
         extracted_text = decrypted_text
         return extracted_text
