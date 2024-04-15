@@ -11,6 +11,21 @@ from Crypto.Protocol.KDF import PBKDF2
 import subprocess
 import re
 
+import sqlite3
+
+def get_all_contacts():
+    conn = sqlite3.connect("phonebook.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM contacts")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    contacts_dict = {}
+    for row in rows:
+        contacts_dict[row[0]] = row[1]
+    
+    return contacts_dict
+
 def get_wireless_ipv4():
     # Run the ipconfig command
     result = subprocess.run(['ipconfig'], capture_output=True, text=True)

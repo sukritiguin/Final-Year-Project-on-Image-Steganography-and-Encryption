@@ -1,6 +1,7 @@
 import tkinter as tk
 from ..socketio.socket_communication_frame import SocketCommunicationPanel
 from ..steganography.steganography_frame import SteganographyPannel
+from ..home.phoneBook import PhoneBookPanel
 
 def navigate_to(page_name, content_frame):
     # Placeholder function for navigation
@@ -9,7 +10,8 @@ def navigate_to(page_name, content_frame):
     clear_content(content_frame)
     # Display content based on page name
     if page_name == "Home":
-        home_page(content_frame)
+        phonebook_panel = PhoneBookPanel(content_frame)
+        phonebook_panel.create_both_frames()
     elif page_name == "Image Steganography":
         steganography_panel = SteganographyPannel(content_frame)
         steganography_panel.stegganography_page()

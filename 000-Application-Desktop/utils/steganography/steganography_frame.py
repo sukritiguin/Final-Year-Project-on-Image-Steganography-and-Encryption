@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
 
-from .utils import LSBSteganography, generate_random_string, extract_filename_and_extension, get_wireless_ipv4
+from .utils import LSBSteganography, generate_random_string, extract_filename_and_extension, get_wireless_ipv4, get_all_contacts
 
 class SteganographyPannel:
     def __init__(self, content_frame):
@@ -11,6 +11,7 @@ class SteganographyPannel:
         self.steganography_extraction_panel = None
         self.steganography_image_path = ""
         self.directory_path = ""
+        self.selected_contact = None
     
     def select_directory(self):
         self.directory_path = filedialog.askdirectory()
@@ -19,7 +20,9 @@ class SteganographyPannel:
     def create_stego_image(self):
         lsb_stego = LSBSteganography(image_path=self.steganography_image_path)
         text = self.text_entry.get("1.0", "end-1c")
-        private_key = self.ip_address_entry.get("1.0", "end-1c")
+        # private_key = self.ip_address_entry.get("1.0", "end-1c")
+        contacts = get_all_contacts()
+        private_key = contacts[self.selected_contact]
         lsb_stego.hide_text(text_to_hide=text, private_key=private_key)
         file_name, extension = extract_filename_and_extension(self.steganography_image_path)
         output_path = self.directory_path + "/" + generate_random_string(size=6) + "-" + file_name + extension
@@ -94,19 +97,31 @@ class SteganographyPannel:
         open_button = tk.Button(self.steganography_panel, text="Open Image", bg=left_panel_bg, font=font, fg=light_black, command=lambda: self.open_image(image_label))
         open_button.pack()
 
+        # - Creating contact menu to select corresponding IP
+        contacts = get_all_contacts()
+        # Create a StringVar to hold the selected contact name
+        self.selected_contact = tk.StringVar()
+        self.selected_contact.set("Select Contact")
+        # Create a dropdown list (OptionMenu) with the keys of the contacts dictionary
+        contact_dropdown = tk.OptionMenu(self.steganography_panel, self.selected_contact, *contacts.keys())
+        contact_dropdown.pack(side="top", pady=10)
+        contact_dropdown.config(bg=left_panel_bg, fg=fg, bd=1, relief="solid", font=font)
+
         # - Stego Image Text
 
         # Create a frame to contain the label and entry widgets
         text_frame = tk.Frame(self.steganography_panel, bg=left_panel_bg)
         text_frame.pack(side="top", pady=(10, 10))
 
+
+
         # Create a label for IP address
-        ip_label = tk.Label(text_frame, text="Enter Receiver IP address:", bg=left_panel_bg, fg=fg, font=font)
-        ip_label.pack(side="top", padx=(10, 5))
+        # ip_label = tk.Label(text_frame, text="Enter Receiver IP address:", bg=left_panel_bg, fg=fg, font=font)
+        # ip_label.pack(side="top", padx=(10, 5))
 
         # Create an entry widget for IP address
-        self.ip_address_entry = tk.Text(text_frame, width=50, height=2, bg=left_panel_bg, fg=light_black, font=font)
-        self.ip_address_entry.pack(side="top", pady=(5, 10))
+        # self.ip_address_entry = tk.Text(text_frame, width=50, height=2, bg=left_panel_bg, fg=light_black, font=font)
+        # self.ip_address_entry.pack(side="top", pady=(5, 10))
 
         text_label = tk.Label(text_frame, text="Enter Message:", bg=left_panel_bg, fg=fg, font=font)
         text_label.pack(side="top", padx=(10, 5))

@@ -1,6 +1,21 @@
 import tkinter as tk
 from PIL import Image, ImageTk
 
+import sqlite3
+
+def get_all_contacts():
+    conn = sqlite3.connect("phonebook.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM contacts")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    contacts_dict = {}
+    for row in rows:
+        contacts_dict[row[0]] = row[1]
+    
+    return contacts_dict
+
 class AnimatedGifLabel(tk.Label):
     def __init__(self, master, file_path, size=(200, 200), **kwargs):
         super().__init__(master, **kwargs)

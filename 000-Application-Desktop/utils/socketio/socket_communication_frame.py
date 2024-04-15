@@ -5,7 +5,7 @@ from tkinter import filedialog
 from PIL import Image, ImageTk
 import threading
 
-from .utils import AnimatedGifLabel
+from .utils import AnimatedGifLabel, get_all_contacts
 
 
 class SocketCommunicationPanel:
@@ -26,10 +26,10 @@ class SocketCommunicationPanel:
     
     def check_listing(self):
         if self.listeing_checkbox_var.get() == False:
-            self.listening.config_image("./000-Application-Desktop/utils/socketio/stop.gif")
+            self.listening.config_image("./utils/socketio/stop.gif")
             self.listening_checkbox.config(text="Listen")
         else:
-            self.listening.config_image("./000-Application-Desktop/utils/socketio/giphy.gif")
+            self.listening.config_image("./utils/socketio/giphy.gif")
             self.listening_checkbox.config(text="Stop Listening")
             # Start a new thread for receiving files
             threading.Thread(target=self.receive_file).start()
@@ -37,9 +37,12 @@ class SocketCommunicationPanel:
 
     def send_file(self):
         # Get the IP address and port from the entry fields
-        ip_address = self.ip_address_entry.get()
+        # ip_address = self.ip_address_entry.get()
+        contacts = get_all_contacts()
+        ip_address = contacts[self.selected_contact]
         try:
-            port = int(self.port_entry.get())
+            # port = int(self.port_entry.get())
+            port = 12345
         except:
             port = 0
         
@@ -116,7 +119,7 @@ class SocketCommunicationPanel:
         # Close the connection
         conn.close()
 
-        self.listening.config_image("./000-Application-Desktop/utils/socketio/stop.gif")
+        self.listening.config_image("./utils/socketio/stop.gif")
         self.listening_checkbox.config(text="Listen")
         self.listeing_checkbox_var.set(False)
 
@@ -173,30 +176,39 @@ class SocketCommunicationPanel:
             open_button.pack()
 
             # - IP Address Frame
+            contacts = get_all_contacts()
+            # Create a StringVar to hold the selected contact name
+            self.selected_contact = tk.StringVar()
+            self.selected_contact.set("Select Contact")
+            # Create a dropdown list (OptionMenu) with the keys of the contacts dictionary
+            contact_dropdown = tk.OptionMenu(self.sender_frame, self.selected_contact, *contacts.keys())
+            contact_dropdown.pack(side="top", pady=10)
+            contact_dropdown.config(bg=left_panel_bg, fg=fg, bd=1, relief="solid", font=font)
+
             # Create a frame to contain the label and entry widgets
             ip_frame = tk.Frame(self.sender_frame, bg=left_panel_bg)
             ip_frame.pack(side="top", pady=(10, 10))
 
             # Create a label for IP address
-            ip_label = tk.Label(ip_frame, text="Enter IP Address:", bg=left_panel_bg, fg=fg, font=font)
-            ip_label.pack(side="left", padx=(10, 5))
+            # ip_label = tk.Label(ip_frame, text="Enter IP Address:", bg=left_panel_bg, fg=fg, font=font)
+            # ip_label.pack(side="left", padx=(10, 5))
 
             # Create an entry widget for IP address
-            self.ip_address_entry = tk.Entry(ip_frame, width=30, bg=left_panel_bg, fg=light_black, font=font)
-            self.ip_address_entry.pack(side="left", padx=(5, 10))
+            # self.ip_address_entry = tk.Entry(ip_frame, width=30, bg=left_panel_bg, fg=light_black, font=font)
+            # self.ip_address_entry.pack(side="left", padx=(5, 10))
 
             # - Port Frame
             # Create a frame to contain the label and entry widgets
-            port_frame = tk.Frame(self.sender_frame, bg=left_panel_bg)
-            port_frame.pack(side="top", pady=(10, 10))
+            # port_frame = tk.Frame(self.sender_frame, bg=left_panel_bg)
+            # port_frame.pack(side="top", pady=(10, 10))
 
             # Create a label for Port Number
-            port_label = tk.Label(port_frame, text="Enter Port Number:", bg=left_panel_bg, fg=fg, font=font)
-            port_label.pack(side="left", padx=(10, 5))
+            # port_label = tk.Label(port_frame, text="Enter Port Number:", bg=left_panel_bg, fg=fg, font=font)
+            # port_label.pack(side="left", padx=(10, 5))
 
             # Create an entry widget for IP address
-            self.port_entry = tk.Entry(port_frame, width=30, bg=left_panel_bg, fg=light_black, font=font)
-            self.port_entry.pack(side="left", padx=(5, 10))
+            # self.port_entry = tk.Entry(port_frame, width=30, bg=left_panel_bg, fg=light_black, font=font)
+            # self.port_entry.pack(side="left", padx=(5, 10))
 
             # - Send Button
             send_button = tk.Button(self.sender_frame, text="Send", bg=left_panel_bg, font=font, fg="green", command=self.send_file)
@@ -234,7 +246,7 @@ class SocketCommunicationPanel:
         self.listening_checkbox.pack(side="top", pady=10)
 
 
-        gif_path = "./000-Application-Desktop/utils/socketio/stop.gif"
+        gif_path = "./utils/socketio/stop.gif"
         self.listening = AnimatedGifLabel(self.receiver_frame, gif_path, size=(150,150))
         self.listening.pack(side="top", pady=(10,10))
 

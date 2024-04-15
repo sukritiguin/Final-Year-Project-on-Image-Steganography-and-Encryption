@@ -1,2 +1,4 @@
 # Ignore venv directory
 venv/
+mainvenv/
+phonebook.db
