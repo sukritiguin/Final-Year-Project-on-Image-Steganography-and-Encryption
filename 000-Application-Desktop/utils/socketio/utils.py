@@ -14,6 +14,8 @@ def get_all_contacts():
     for row in rows:
         contacts_dict[row[0]] = row[1]
     
+    if len(contacts_dict)==0:
+        return {'None': 'Contact'}
     return contacts_dict
 
 class AnimatedGifLabel(tk.Label):

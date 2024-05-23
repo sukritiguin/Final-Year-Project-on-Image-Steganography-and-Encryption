@@ -57,17 +57,72 @@ image_path = r'D:\Image Steganography and Encryption\10-Calculation\image.png'
 lsb_image_path = r'D:\Image Steganography and Encryption\10-Calculation\encoded_image.png'
 modified_lsb_image_path = r'D:\Image Steganography and Encryption\10-Calculation\sSWj9D-image.png'
 
-mse1, psnr1, ssim1, mae1 = calculate_metrics(image_path, lsb_image_path)
-mse2, psnr2, ssim2, mae2 = calculate_metrics(image_path, modified_lsb_image_path)
 
-print("Metrics for image vs. LSB image:")
-print("MSE:", mse1)
-print("PSNR:", psnr1)
-print("SSIM:", ssim1)
-print("MAE:", mae1)
-print()
-print("Metrics for image vs. modified LSB image:")
-print("MSE:", mse2)
-print("PSNR:", psnr2)
-print("SSIM:", ssim2)
-print("MAE:", mae2)
+images = [
+    r"C:\Users\LENOVO\Downloads\Images\original\certificate.png",
+    r"C:\Users\LENOVO\Downloads\Images\original\agreement.png",
+    r"C:\Users\LENOVO\Downloads\Images\original\medical.png",
+]
+
+lsb_images = [
+    r"C:\Users\LENOVO\Downloads\Images\lsb\lsb_certificate.png",
+    r"C:\Users\LENOVO\Downloads\Images\lsb\lsb_agreement.png",
+    r"C:\Users\LENOVO\Downloads\Images\lsb\lsb_medical.png",
+]
+
+modified_lsb_images = [
+    r"C:\Users\LENOVO\Downloads\Images\mlsb\mlsb_certificate.png",
+    r"C:\Users\LENOVO\Downloads\Images\mlsb\mlsb_agreement.png",
+    r"C:\Users\LENOVO\Downloads\Images\mlsb\mlsb_medical.png",
+]
+
+
+# mse1, psnr1, ssim1, mae1 = calculate_metrics(image_path, lsb_image_path)
+# mse2, psnr2, ssim2, mae2 = calculate_metrics(image_path, modified_lsb_image_path)
+
+# print("Metrics for image vs. LSB image:")
+# print("MSE:", mse1)
+# print("PSNR:", psnr1)
+# print("SSIM:", ssim1)
+# print("MAE:", mae1)
+# print()
+# print("Metrics for image vs. modified LSB image:")
+# print("MSE:", mse2)
+# print("PSNR:", psnr2)
+# print("SSIM:", ssim2)
+# print("MAE:", mae2)
+
+
+# Import necessary libraries
+import os
+
+# Define the paths and filenames
+output_dir = r"C:\Users\LENOVO\Downloads\Images"
+output_file = os.path.join(output_dir, "report.txt")
+
+
+for i in range(3):
+    image_path = images[i]
+    lsb_image_path = lsb_images[i]
+    modified_lsb_image_path = modified_lsb_images[i]
+    mse1, psnr1, ssim1, mae1 = calculate_metrics(image_path, lsb_image_path)
+    mse2, psnr2, ssim2, mae2 = calculate_metrics(image_path, modified_lsb_image_path)
+
+    with open(output_file, 'a') as file:
+        file.write('Original Image: '+ image_path + "\n")
+        file.write("LSB Image: "+ lsb_image_path + "\n")
+        file.write('Modified LSB Image: ' + modified_lsb_image_path + "\n\n")
+
+        file.write("Metrics for image vs. LSB image:\n")
+        file.write(f"MSE: {mse1}\n")
+        file.write(f"PSNR: {psnr1}\n")
+        file.write(f"SSIM: {ssim1}\n")
+        file.write(f"MAE: {mae1}\n\n")
+        
+        file.write("Metrics for image vs. modified LSB image:\n")
+        file.write(f"MSE: {mse2}\n")
+        file.write(f"PSNR: {psnr2}\n")
+        file.write(f"SSIM: {ssim2}\n")
+        file.write(f"MAE: {mae2}\n")
+
+        file.write("================================================================\n")

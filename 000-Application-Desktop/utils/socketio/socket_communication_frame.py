@@ -39,7 +39,7 @@ class SocketCommunicationPanel:
         # Get the IP address and port from the entry fields
         # ip_address = self.ip_address_entry.get()
         contacts = get_all_contacts()
-        ip_address = contacts[self.selected_contact]
+        ip_address = str(contacts[self.selected_contact.get()])
         try:
             # port = int(self.port_entry.get())
             port = 12345
@@ -67,14 +67,14 @@ class SocketCommunicationPanel:
             if self.success_message:
                 self.success_message.config(text="File sent successfully!")
             else:
-                self.success_message = tk.Label(self.sender_frame, text="File sent successfully!", bg="green", fg="#fff", font=("Comic Sans MS", 12, "bold"))
+                self.success_message = tk.Label(self.sender_frame, text="File sent successfully!", bg="green", fg="black", font=("Comic Sans MS", 12, "bold"))
                 self.success_message.pack(side="top", pady=(10, 5))
             print("File sent successfully!")
         except Exception as e:
             if self.error_message:
                 self.error_message.config(text="Something went wrong!")
             else:
-                self.error_message = tk.Label(self.sender_frame, text="Something Went Wrong!", bg="red", fg="#fff", font=("Comic Sans MS", 12, "bold"))
+                self.error_message = tk.Label(self.sender_frame, text="Something Went Wrong!", bg="red", fg="black", font=("Comic Sans MS", 12, "bold"))
                 self.error_message.pack(side="top", pady=(10, 5))
             print(f"Error: {e}")
         finally:
@@ -154,7 +154,7 @@ class SocketCommunicationPanel:
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        left_panel_bg = "#def26b"
+        left_panel_bg = "#c1dbcf"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -220,7 +220,7 @@ class SocketCommunicationPanel:
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        right_panel_bg = "#f56942"
+        right_panel_bg = "#d5e8f7"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -233,14 +233,14 @@ class SocketCommunicationPanel:
         receiver_header.pack(fill="x")
 
         # Create a label for Port Number
-        directory = tk.Button(self.receiver_frame, text="Select Directory", bg=right_panel_bg, fg="#fff", font=font, command=self.select_directory)
+        directory = tk.Button(self.receiver_frame, text="Select Directory", bg=right_panel_bg, fg="black", font=font, command=self.select_directory)
         directory.pack(side="top", pady=(10, 10))
 
         # Create a Tkinter variable to store the checkbox state
         self.listeing_checkbox_var = tk.BooleanVar()
 
         # Create the checkbox widget
-        self.listening_checkbox = tk.Checkbutton(self.receiver_frame, text="Listen", variable=self.listeing_checkbox_var, command=self.check_listing, bg=right_panel_bg, fg="#fff", font=font)
+        self.listening_checkbox = tk.Checkbutton(self.receiver_frame, text="Listen", variable=self.listeing_checkbox_var, command=self.check_listing, bg=right_panel_bg, fg="black", font=font)
 
         # Place the checkbox widget in the window
         self.listening_checkbox.pack(side="top", pady=10)

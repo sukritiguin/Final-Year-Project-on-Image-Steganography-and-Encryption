@@ -22,7 +22,8 @@ class SteganographyPannel:
         text = self.text_entry.get("1.0", "end-1c")
         # private_key = self.ip_address_entry.get("1.0", "end-1c")
         contacts = get_all_contacts()
-        private_key = contacts[self.selected_contact]
+        print(contacts)
+        private_key = str(contacts[self.selected_contact.get()])
         lsb_stego.hide_text(text_to_hide=text, private_key=private_key)
         file_name, extension = extract_filename_and_extension(self.steganography_image_path)
         output_path = self.directory_path + "/" + generate_random_string(size=6) + "-" + file_name + extension
@@ -69,7 +70,7 @@ class SteganographyPannel:
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        left_panel_bg = "#def26b"
+        left_panel_bg = "#c1dbcf"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -138,7 +139,7 @@ class SteganographyPannel:
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        right_panel_bg = "#f56942"
+        right_panel_bg = "#d5e8f7"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -156,7 +157,7 @@ class SteganographyPannel:
         image_label.pack(padx=10, pady=10)
 
         # Create a button to open the file dialog
-        open_button = tk.Button(self.steganography_extraction_panel, text="Open Image", bg=right_panel_bg, font=font, fg="#fff", command=lambda: self.open_image(image_label))
+        open_button = tk.Button(self.steganography_extraction_panel, text="Open Image", bg=right_panel_bg, font=font, fg="black", command=lambda: self.open_image(image_label))
         open_button.pack(side="top", pady=10)
 
         # - Send Button

@@ -2,6 +2,8 @@ import tkinter as tk
 from ..socketio.socket_communication_frame import SocketCommunicationPanel
 from ..steganography.steganography_frame import SteganographyPannel
 from ..home.phoneBook import PhoneBookPanel
+from ..summary.summary_frame import SummaryPage
+from ..documentation.documentation_frame import DocumentationPage
 
 def navigate_to(page_name, content_frame):
     # Placeholder function for navigation
@@ -19,9 +21,9 @@ def navigate_to(page_name, content_frame):
         socket_commmunication = SocketCommunicationPanel(content_frame)
         socket_commmunication.socket_communication_page()
     elif page_name == "Documentation":
-        documentation_page(content_frame)
-    elif page_name == "About Us":
-        about_us_page(content_frame)
+        documentation_page = DocumentationPage(content_frame)
+    elif page_name == "Summary":
+        summary_page = SummaryPage(content_frame)
 
 def clear_content(content_frame):
     # Clear existing content

@@ -12,12 +12,18 @@ class PhoneBookPanel:
         self.right_phone_book = None
         self.contacts_list = None
 
+        conn = sqlite3.connect("phonebook.db")
+        cursor = conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS contacts
+                        (name TEXT, number TEXT)''')
+        conn.close()
+
     def create_left_frame(self):
         # Create sender and receiver frames
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        left_panel_bg = "#def26b"
+        left_panel_bg = "#c1dbcf"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -51,7 +57,7 @@ class PhoneBookPanel:
         width_ = self.content_frame.winfo_width() / 2 - 20;
         height_ = self.content_frame.winfo_height() / 2 - 10;
 
-        right_panel_bg = "#f56942"
+        right_panel_bg = "#d5e8f7"
         font=("Comic Sans MS", 12, "bold")
         fg = "#fc6603"
         light_black = "#383532"
@@ -71,7 +77,7 @@ class PhoneBookPanel:
 
         # Style for the Delete Contact button
         delete_button_style = ttk.Style()
-        delete_button_style.configure("DeleteButton.TButton", foreground="yellowgreen", background="#e74c3c", font=("Helvetica", 14), relief="flat", padx=15, pady=8)
+        delete_button_style.configure("DeleteButton.TButton", foreground="red", background="#fff", font=("Helvetica", 14), relief="flat", padx=15, pady=8)
 
         delete_button = ttk.Button(self.right_phone_book, text="Delete Contact", command=lambda: delete_contact(self.contacts_list), style="DeleteButton.TButton")
         delete_button.pack(side="top", pady=10)

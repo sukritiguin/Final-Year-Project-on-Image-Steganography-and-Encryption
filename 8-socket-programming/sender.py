@@ -6,7 +6,7 @@ import os
 def send_file():
     # Get the IP address and port from the entry fields
     ip_address = ip_entry.get()
-    port = int(port_entry.get())
+    port = int(port_entry.get()) # 12345
     
     # Open a file dialog to select the file to send
     file_path = filedialog.askopenfilename()
